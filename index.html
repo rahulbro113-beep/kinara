@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<!-- Keep noindex until launch (CLAUDE.md, safety rule 11) -->
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Kinara</title>
+<!-- TODO (Step 2): download these fonts into the fonts folder and remove this link (CLAUDE.md, safety rule 2) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Mukta:wght@400;600&family=Noto+Sans+Kannada:wght@500&display=swap">
+<style>
+/* Layout: one phone-first column (max 40rem) under a sticky bar that always holds the quick-exit button */
+:root {
+  --bg: #F3F6F2;
+  --fg: #1B2624;
+  --muted: #55625E;
+  --line: #D6DED9;
+  --accent: #0A6B65;
+  --accent-soft: #E0EFEC;
+  --on-accent: #FFFFFF;
+  --marigold-soft: #FAEFD3;
+  --marigold-ink: #6F4C00;
+  --danger: #A3231B;
+  --danger-soft: #FBE6E2;
+  --on-danger: #FFFFFF;
+  --display: "Baloo 2", "Mukta", system-ui, sans-serif;
+  --body: "Mukta", "Noto Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --kannada: "Noto Sans Kannada", "Mukta", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0F1615; --fg: #E3EBE8; --muted: #9AA9A4; --line: #283431;
+    --accent: #62C4BA; --accent-soft: #15302C; --on-accent: #08130F;
+    --marigold-soft: #2D2614; --marigold-ink: #F0C55E;
+    --danger: #FF8E82; --danger-soft: #361A17; --on-danger: #1A0907;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+.bar {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 10;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+.bar-inner {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 0.6rem 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.brand {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: var(--accent);
+  line-height: 1;
+}
+.exit {
+  font: 600 1rem/1 var(--body);
+  background: var(--danger);
+  color: var(--on-danger);
+  border: 0;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.1rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+main {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding-inline: 16px;
+  padding-block: 2rem 3rem;
+  display: grid;
+  gap: 3rem;
+}
+section { display: grid; gap: 1rem; min-width: 0; }
+
+h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(2.1rem, 7vw, 2.9rem); line-height: 1.08; font-weight: 700; }
+h2 { font-size: 1.65rem; line-height: 1.15; font-weight: 700; }
+h3 { font-size: 1.2rem; line-height: 1.2; font-weight: 600; }
+p { margin: 0; }
+
+.also-said { display: grid; gap: 0.1rem; color: var(--muted); font-size: 1.1rem; }
+.also-said [lang="kn"] { font-family: var(--kannada); font-size: 1rem; }
+.lead { font-size: 1.15rem; }
+.tip { color: var(--muted); font-size: 0.98rem; }
+.tip strong { color: var(--fg); }
+
+.urgent {
+  background: var(--danger-soft);
+  border: 1px solid var(--danger);
+  border-radius: 0.85rem;
+  padding: 1.25rem;
+  display: grid;
+  gap: 0.5rem;
+}
+.urgent .label {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--danger);
+}
+.urgent .row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.urgent .num { color: var(--danger); font-size: 3.6rem; }
+
+.num {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 2.3rem;
+  line-height: 1;
+  color: var(--accent);
+  text-decoration: none;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+.copy {
+  font: 600 0.85rem/1 var(--body);
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.45rem 0.8rem;
+  min-height: 36px;
+  cursor: pointer;
+}
+.urgent .copy { border-color: var(--danger); }
+
+.lines { display: grid; }
+.line {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: 1rem;
+  padding-block: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+.line:last-child { border-bottom: 1px solid var(--line); }
+.num-wrap { display: flex; flex-direction: column; align-items: flex-start; gap: 0.6rem; }
+.info { display: grid; gap: 0.4rem; min-width: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.chips span {
+  background: var(--marigold-soft);
+  color: var(--marigold-ink);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+}
+.small { font-size: 0.95rem; color: var(--muted); }
+.small b { color: var(--fg); font-variant-numeric: tabular-nums; font-weight: 600; }
+
+@media (max-width: 30rem) {
+  .line { grid-template-columns: minmax(0, 1fr); gap: 0.6rem; }
+  .num-wrap { flex-direction: row; align-items: center; gap: 1rem; }
+}
+
+.centre {
+  background: var(--accent-soft);
+  border-radius: 0.85rem;
+  padding: 1.25rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+ol.steps { list-style: none; counter-reset: step; margin: 0; padding: 0; display: grid; gap: 0.9rem; }
+ol.steps li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+}
+ol.steps li::before {
+  content: counter(step);
+  font-family: var(--display);
+  font-weight: 700;
+  width: 2rem; height: 2rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  display: grid; place-items: center;
+  line-height: 1;
+}
+
+ul.plain { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.6rem; }
+ul.plain li::marker { color: var(--accent); }
+
+footer {
+  border-top: 1px solid var(--line);
+  padding-top: 1.5rem;
+  display: grid;
+  gap: 0.75rem;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+footer ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.2rem; }
+
+/* Shown for a moment after Quick exit, while the browser moves to the neutral page */
+#cover { max-width: 40rem; margin: 0 auto; padding-inline: 16px; padding-block: 2rem; display: grid; gap: 1rem; }
+#cover .site { font-weight: 600; color: var(--muted); }
+#cover ol, #cover ul { margin: 0; padding-left: 1.3rem; display: grid; gap: 0.35rem; }
+</style>
+</head>
+<body>
+
+<div id="real">
+  <header class="bar">
+    <div class="bar-inner">
+      <span class="brand">Kinara</span>
+      <button class="exit" id="exit" type="button">Quick exit</button>
+    </div>
+  </header>
+
+  <main>
+    <section aria-labelledby="hero">
+      <h1 id="hero">What happened to you is not your fault.</h1>
+      <div class="also-said">
+        <p lang="hi">यह आपकी गलती नहीं है।</p>
+        <p lang="kn">ಇದು ನಿಮ್ಮ ತಪ್ಪಲ್ಲ.</p>
+      </div>
+      <p class="lead">If someone at home hurts you, insults you, controls your money, or blames you for things that were never yours to carry, you deserve help. Every number on this page is run by the Government of India, and you do not need proof or anyone's permission to call.</p>
+      <p class="tip"><strong>Someone checks your phone?</strong> Tap Quick exit at the top, or press Esc, and you will be taken to a weather page. Opening this site in an incognito tab keeps it out of your history.</p>
+    </section>
+
+    <section class="urgent" aria-labelledby="danger">
+      <span class="label" id="danger">In danger right now</span>
+      <div class="row">
+        <a class="num" href="tel:112">112</a>
+        <button class="copy" type="button" data-copy="112">Copy</button>
+      </div>
+      <p>Police, ambulance and fire. Free, 24 hours a day, anywhere in India.</p>
+    </section>
+
+    <section aria-labelledby="lines">
+      <h2 id="lines">Free help you can call</h2>
+      <div class="lines">
+        <article class="line">
+          <div class="num-wrap">
+            <a class="num" href="tel:181">181</a>
+            <button class="copy" type="button" data-copy="181">Copy</button>
+          </div>
+          <div class="info">
+            <h3>Women Helpline</h3>
+            <p class="chips"><span>24×7</span><span>Toll-free</span></p>
+            <p>For any violence or abuse, at home or outside. They counsel you and can connect you to the police, a One Stop Centre, a hospital or free legal help. They also explain government schemes for women.</p>
+            <p class="small">Anyone can call on a woman's behalf.</p>
+          </div>
+        </article>
+
+        <article class="line">
+          <div class="num-wrap">
+            <a class="num" href="tel:14490">14490</a>
+            <button class="copy" type="button" data-copy="14490">Copy</button>
+          </div>
+          <div class="info">
+            <h3>National Commission for Women</h3>
+            <p class="chips"><span>24×7</span><span>Toll-free</span><span>18 and over</span></p>
+            <p>Trained counsellors help you register a complaint about domestic violence, cyber harassment, stalking or sexual violence, and connect you with the police and other help.</p>
+            <p class="small">The same helpline also answers on <b>78271 70170</b>.</p>
+          </div>
+        </article>
+
+        <article class="line">
+          <div class="num-wrap">
+            <a class="num" href="tel:14416">14416</a>
+            <button class="copy" type="button" data-copy="14416">Copy</button>
+          </div>
+          <div class="info">
+            <h3>Tele-MANAS mental health line</h3>
+            <p class="chips"><span>24×7</span><span>Toll-free</span><span>Your language</span></p>
+            <p>If you feel low, anxious, cannot sleep, or feel you cannot go on, talk to a trained counsellor. Run by the Ministry of Health.</p>
+            <p class="small">Also on <b>1800 891 4416</b>.</p>
+          </div>
+        </article>
+
+        <article class="line">
+          <div class="num-wrap">
+            <a class="num" href="tel:15100">15100</a>
+            <button class="copy" type="button" data-copy="15100">Copy</button>
+          </div>
+          <div class="info">
+            <h3>Free legal aid</h3>
+            <p class="chips"><span>Toll-free</span><span>Free lawyer</span></p>
+            <p>Every woman can get free legal advice and a lawyer at no cost, whatever her income. You can also walk into the legal aid office at your district court.</p>
+          </div>
+        </article>
+
+        <article class="line">
+          <div class="num-wrap">
+            <a class="num" href="tel:1098">1098</a>
+            <button class="copy" type="button" data-copy="1098">Copy</button>
+          </div>
+          <div class="info">
+            <h3>Child Helpline</h3>
+            <p class="chips"><span>24×7</span><span>Under 18</span></p>
+            <p>For any girl or boy under 18 facing violence, abuse or exploitation, including at home.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="centre" aria-labelledby="osc">
+      <h2 id="osc">Sakhi One Stop Centres</h2>
+      <p>Most districts have one. In one place you can get medical care, help with the police, free legal aid, counselling, and a safe place to stay for up to 5 days. You can bring your daughters, and your sons up to age 12.</p>
+      <p><strong>Call 181 to find the one nearest you.</strong></p>
+    </section>
+
+    <section aria-labelledby="call">
+      <h2 id="call">What happens when you call</h2>
+      <ol class="steps">
+        <li><span>Someone picks up. You can start with a simple question, like "What can you help me with?"</span></li>
+        <li><span>They ask what is happening and listen. You decide how much to share.</span></li>
+        <li><span>They explain your options: counselling, legal help, a safe place to stay, or the police.</span></li>
+        <li><span>Before you give your name or address, you can ask what they will do with it.</span></li>
+      </ol>
+      <p class="small">If calling from home is not safe, use a friend's phone, or ask someone you trust to call 181 for you.</p>
+    </section>
+
+    <section aria-labelledby="law">
+      <h2 id="law">What the law says</h2>
+      <p>The Protection of Women from Domestic Violence Act, 2005 protects women from abuse by the people they live with as family.</p>
+      <ul class="plain">
+        <li>It is not only hitting. Insults, threats, sexual abuse, and keeping money or basic needs from you also count as domestic violence.</li>
+        <li>It protects daughters, sisters, mothers and widows too, not only wives.</li>
+        <li>A magistrate can order the abuser to stop, and can stop you from being thrown out of the home you share.</li>
+        <li>You can also ask for money for your expenses, custody of your children, and compensation.</li>
+        <li>Each district has Protection Officers, often women, whose job is to help you apply.</li>
+        <li>Breaking a protection order is a crime.</li>
+      </ul>
+      <p class="small">This is general information, not legal advice. A free legal aid lawyer on 15100 can explain what applies to you.</p>
+    </section>
+
+    <section aria-labelledby="family">
+      <h2 id="family">If someone you love is going through this</h2>
+      <ul class="plain">
+        <li>Believe her. Never ask what she did to cause it.</li>
+        <li>Ask what she wants, and respect it, even if you would choose differently.</li>
+        <li>Keep what she tells you private.</li>
+        <li>You can call 181 on her behalf.</li>
+        <li>Help her save these numbers somewhere only she can find them.</li>
+      </ul>
+    </section>
+
+    <footer>
+      <p>Numbers checked on 7 October 2026 against government sources. If a number does not connect, call 112. This site saves nothing you do here.</p>
+      <ul>
+        <li><a href="https://www.publicservicesmap.in/schemes/women-helpline--whl-181" target="_blank" rel="noopener noreferrer">Women Helpline 181</a></li>
+        <li><a href="https://www.tribuneindia.com/news/india/ncw-launches-24x7-short-code-helpline-14490-for-women-in-distress" target="_blank" rel="noopener noreferrer">NCW helpline 14490</a></li>
+        <li><a href="https://telemanas.mohfw.gov.in" target="_blank" rel="noopener noreferrer">Tele-MANAS</a></li>
+        <li><a href="https://nalsa.gov.in/promoting-inclusive-legal-system/" target="_blank" rel="noopener noreferrer">NALSA free legal aid</a></li>
+        <li><a href="https://en.vikaspedia.in/viewcontent/social-welfare/women-and-child-development/women-development-1/one-stop-centre-scheme" target="_blank" rel="noopener noreferrer">One Stop Centre scheme</a></li>
+        <li><a href="https://cdn.ncw.gov.in/wp-content/uploads/2022/12/TheProtectionofWomenfromDomesticViolenceAct2005_0.pdf" target="_blank" rel="noopener noreferrer">Domestic Violence Act, 2005 (full text)</a></li>
+      </ul>
+    </footer>
+  </main>
+</div>
+
+<div id="cover" hidden>
+  <p class="site">Rasoi Notes</p>
+  <h1>Masala chai for two</h1>
+  <ul>
+    <li>1 cup water and 1 cup milk</li>
+    <li>2 teaspoons tea leaves</li>
+    <li>2 teaspoons sugar</li>
+    <li>2 cardamom pods and a small piece of ginger, crushed</li>
+  </ul>
+  <ol>
+    <li>Boil the water with the ginger and cardamom for 2 minutes.</li>
+    <li>Add the tea leaves and simmer for 1 minute.</li>
+    <li>Add the milk and sugar and let it rise to a boil twice.</li>
+    <li>Strain into cups and serve hot.</li>
+  </ol>
+</div>
+
+<script>
+(function () {
+  // Where Quick exit sends her. location.replace() swaps this page out of the history, so Back does not return here.
+  var NEUTRAL_PAGE = 'https://www.google.com/search?q=weather';
+  var real = document.getElementById('real');
+  var cover = document.getElementById('cover');
+
+  function quickExit() {
+    real.hidden = true;
+    cover.hidden = false;
+    document.title = 'Masala Chai';
+    window.scrollTo(0, 0);
+    try { window.location.replace(NEUTRAL_PAGE); } catch (e) { /* the recipe cover stays up */ }
+  }
+  document.getElementById('exit').addEventListener('click', quickExit);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') quickExit();
+  });
+
+  function selectNumber(btn) {
+    var n = btn.parentElement.querySelector('.num');
+    if (!n) return;
+    var r = document.createRange();
+    r.selectNodeContents(n);
+    var s = window.getSelection();
+    s.removeAllRanges();
+    s.addRange(r);
+    btn.textContent = 'Selected';
+    setTimeout(function () { btn.textContent = 'Copy'; }, 1800);
+  }
+
+  document.querySelectorAll('[data-copy]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var text = btn.getAttribute('data-copy');
+      try {
+        navigator.clipboard.writeText(text).then(function () {
+          btn.textContent = 'Copied';
+          setTimeout(function () { btn.textContent = 'Copy'; }, 1800);
+        }).catch(function () { selectNumber(btn); });
+      } catch (e) {
+        selectNumber(btn);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
