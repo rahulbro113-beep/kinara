@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -7,222 +7,454 @@
 <!-- Keep noindex until launch (CLAUDE.md, safety rule 11) -->
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
+<!-- Safety rule 2: the browser itself refuses to load anything from other websites -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="theme-color" content="#FFF6EA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1E23" media="(prefers-color-scheme: dark)">
 <title>Kinara</title>
-<!-- TODO (Step 2): download these fonts into the fonts folder and remove this link (CLAUDE.md, safety rule 2) -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Mukta:wght@400;600&family=Noto+Sans+Kannada:wght@500&display=swap">
+<script>document.documentElement.className = 'js';</script>
 <style>
-/* Layout: one phone-first column (max 40rem) under a sticky bar that always holds the quick-exit button */
-:root {
-  --bg: #F3F6F2;
-  --fg: #1B2624;
-  --muted: #55625E;
-  --line: #D6DED9;
-  --accent: #0A6B65;
-  --accent-soft: #E0EFEC;
-  --on-accent: #FFFFFF;
-  --marigold-soft: #FAEFD3;
-  --marigold-ink: #6F4C00;
-  --danger: #A3231B;
-  --danger-soft: #FBE6E2;
-  --on-danger: #FFFFFF;
-  --display: "Baloo 2", "Mukta", system-ui, sans-serif;
-  --body: "Mukta", "Noto Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --kannada: "Noto Sans Kannada", "Mukta", system-ui, sans-serif;
+/* Fonts live in the fonts folder (safety rule 2). Each file loads only when the page shows that script. */
+@font-face {
+  font-family: "Baloo 2";
+  src: url("fonts/baloo-2-latin-wght-normal.woff2") format("woff2");
+  font-weight: 400 800;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+@font-face {
+  font-family: "Baloo 2";
+  src: url("fonts/baloo-2-devanagari-wght-normal.woff2") format("woff2");
+  font-weight: 400 800;
+  font-display: swap;
+  unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B09;
+}
+@font-face {
+  font-family: "Mukta";
+  src: url("fonts/mukta-latin-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Mukta";
+  src: url("fonts/mukta-latin-600-normal.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Mukta";
+  src: url("fonts/mukta-devanagari-400-normal.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0900-097F, U+1CD0-1CF9, U+200C-200D, U+20A8, U+20B9, U+20F0, U+25CC, U+A830-A839, U+A8E0-A8FF, U+11B00-11B09;
+}
+@font-face {
+  font-family: "Baloo Tamma 2";
+  src: url("fonts/baloo-tamma-2-kannada-wght-normal.woff2") format("woff2");
+  font-weight: 400 800;
+  font-display: swap;
+  unicode-range: U+0951-0952, U+0964-0965, U+0C80-0CF3, U+1CD0, U+1CD2-1CD3, U+1CDA, U+1CF2, U+1CF4, U+200C-200D, U+20B9, U+25CC, U+A830-A835;
+}
+
+/* Layout: one calm column (max 42rem) under a sticky bar that always holds Quick exit.
+   A sunrise over the shore opens the page; soft waves lead into the Calm corner band and the footer. */
+:root {
+  --sand: #FFF6EA;
+  --sand-deep: #F7E8D3;
+  --card: #FFFDF8;
+  --ink: #17343A;
+  --muted: #4F6468;
+  --line: #EADBC6;
+  --line-strong: #CDB9A0;
+  --sea: #0F6F74;
+  --sea-soft: #DDF1EE;
+  --on-sea: #FFFFFF;
+  --water: #5DB8B1;
+  --water-deep: #2E8F8F;
+  --foam: #F4FBF9;
+  --sun: #F2B347;
+  --sun-glow: #FAD38B;
+  --sun-soft: #FCEBC9;
+  --sun-ink: #7A4D00;
+  --coral: #E8846E;
+  --sky-top: #FCDDBB;
+  --sky-bottom: #FFF3E3;
+  --danger: #B3261E;
+  --danger-soft: #FCE7E3;
+  --on-danger: #FFFFFF;
+  --grain: rgba(23, 52, 58, 0.07);
+  --display: "Baloo 2", "Baloo Tamma 2", system-ui, sans-serif;
+  --body: "Mukta", "Baloo Tamma 2", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+}
+/* Night sea */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0F1615; --fg: #E3EBE8; --muted: #9AA9A4; --line: #283431;
-    --accent: #62C4BA; --accent-soft: #15302C; --on-accent: #08130F;
-    --marigold-soft: #2D2614; --marigold-ink: #F0C55E;
-    --danger: #FF8E82; --danger-soft: #361A17; --on-danger: #1A0907;
+    --sand: #0B1E23;
+    --sand-deep: #10282E;
+    --card: #11262C;
+    --ink: #E6F0EE;
+    --muted: #A3B8BA;
+    --line: #22414A;
+    --line-strong: #37606A;
+    --sea: #6FD0C8;
+    --sea-soft: #10343A;
+    --on-sea: #06191C;
+    --water: #1F5E66;
+    --water-deep: #174A52;
+    --foam: #BFE3DF;
+    --sun: #F3D58E;
+    --sun-glow: #F3D58E;
+    --sun-soft: #2B2614;
+    --sun-ink: #F3D58E;
+    --coral: #F09A86;
+    --sky-top: #071519;
+    --sky-bottom: #0E2830;
+    --danger: #FF8A80;
+    --danger-soft: #3A1916;
+    --on-danger: #2A0805;
+    --grain: rgba(230, 240, 238, 0.05);
   }
 }
 
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
+.no-js .needs-js { display: none !important; }
 
+html { scroll-padding-top: 5rem; -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--fg);
+  background: var(--sand);
+  color: var(--ink);
   font-family: var(--body);
-  font-size: 1.0625rem;
+  font-size: 1.125rem;
   line-height: 1.6;
 }
-a { color: var(--accent); }
-:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+a { color: var(--sea); text-underline-offset: 0.18em; }
+:focus-visible { outline: 3px solid var(--sea); outline-offset: 3px; border-radius: 6px; }
+h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; line-height: 1.15; }
+h1 { font-size: clamp(2rem, 6.5vw, 2.9rem); font-weight: 700; line-height: 1.1; }
+h2 { font-size: clamp(1.65rem, 4.6vw, 2.05rem); font-weight: 700; }
+h3 { font-size: 1.25rem; font-weight: 600; }
+p { margin: 0; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+.wrap { max-width: 42rem; margin: 0 auto; padding-inline: 16px; }
+.section { display: grid; gap: 1.1rem; padding-block: 2.5rem; min-width: 0; }
 
+/* Top bar */
 .bar {
   position: sticky;
-  top: env(safe-area-inset-top, 0px);
-  z-index: 10;
-  background: var(--bg);
+  top: 0;
+  z-index: 20;
+  background: var(--sand);
   border-bottom: 1px solid var(--line);
+  padding-top: env(safe-area-inset-top, 0px);
 }
 .bar-inner {
-  max-width: 40rem;
+  max-width: 42rem;
   margin: 0 auto;
-  padding: 0.6rem 16px;
+  padding: 0.55rem 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
 }
 .brand {
-  font-family: var(--display);
-  font-weight: 700;
-  font-size: 1.35rem;
-  color: var(--accent);
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font: 700 1.45rem/1 var(--display);
+  color: var(--sea);
+  text-decoration: none;
 }
+.brand svg { width: 1.7rem; height: 1.7rem; flex: none; }
+.mark-sun { fill: var(--sun); }
+.mark-sea { fill: var(--sea); }
 .exit {
   font: 600 1rem/1 var(--body);
   background: var(--danger);
   color: var(--on-danger);
-  border: 0;
-  border-radius: 0.5rem;
-  padding: 0.75rem 1.1rem;
-  min-height: 44px;
+  border-radius: 999px;
+  padding: 0.8rem 1.25rem;
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+/* Sunrise over the shore */
+.horizon { display: block; width: 100%; height: clamp(9.5rem, 27vw, 15rem); }
+.horizon .sky-top { stop-color: var(--sky-top); }
+.horizon .sky-bottom { stop-color: var(--sky-bottom); }
+.horizon .glow { stop-color: var(--sun-glow); }
+.horizon .sun { fill: var(--sun); }
+.horizon .wave-back { fill: var(--water); opacity: 0.6; }
+.horizon .wave-mid { fill: var(--water-deep); opacity: 0.85; }
+.horizon .shore { fill: var(--sand); }
+.drift { transform-box: fill-box; animation: drift 48s linear infinite; }
+.drift.rev { animation-name: drift-rev; animation-duration: 36s; }
+@keyframes drift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes drift-rev { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+
+.hero { display: grid; gap: 1rem; padding-block: 0.75rem 2rem; }
+.hero h1 .first { display: block; color: var(--sea); }
+.also-said { display: grid; gap: 0.1rem; color: var(--muted); font-size: 1.15rem; }
+.lead { font-size: 1.2rem; }
+.jump { display: flex; flex-wrap: wrap; gap: 0.6rem; padding-block: 0.25rem; }
+.tip {
+  color: var(--muted);
+  font-size: 1rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.9rem;
+}
+.tip strong { color: var(--ink); }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.7rem 1.25rem;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  font: 600 1.05rem/1.1 var(--body);
+  text-decoration: none;
   cursor: pointer;
+  text-align: center;
 }
+.btn-sea { background: var(--sea); color: var(--on-sea); }
+.btn-danger { background: var(--danger); color: var(--on-danger); }
+.btn-outline { background: transparent; color: var(--ink); border-color: var(--line-strong); }
+.btn:disabled { opacity: 0.45; cursor: default; }
+.actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
 
-main {
-  max-width: 40rem;
-  margin: 0 auto;
-  padding-inline: 16px;
-  padding-block: 2rem 3rem;
+/* Talk to someone now */
+.urgent, .line {
+  border-radius: 1.25rem;
+  padding: 1.15rem;
   display: grid;
-  gap: 3rem;
+  gap: 0.65rem;
+  min-width: 0;
 }
-section { display: grid; gap: 1rem; min-width: 0; }
-
-h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; }
-h1 { font-size: clamp(2.1rem, 7vw, 2.9rem); line-height: 1.08; font-weight: 700; }
-h2 { font-size: 1.65rem; line-height: 1.15; font-weight: 700; }
-h3 { font-size: 1.2rem; line-height: 1.2; font-weight: 600; }
-p { margin: 0; }
-
-.also-said { display: grid; gap: 0.1rem; color: var(--muted); font-size: 1.1rem; }
-.also-said [lang="kn"] { font-family: var(--kannada); font-size: 1rem; }
-.lead { font-size: 1.15rem; }
-.tip { color: var(--muted); font-size: 0.98rem; }
-.tip strong { color: var(--fg); }
-
-.urgent {
-  background: var(--danger-soft);
-  border: 1px solid var(--danger);
-  border-radius: 0.85rem;
-  padding: 1.25rem;
-  display: grid;
-  gap: 0.5rem;
-}
-.urgent .label {
+.urgent { background: var(--danger-soft); border: 1px solid var(--danger); }
+.line { background: var(--card); border: 1px solid var(--line); }
+.label {
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--danger);
 }
-.urgent .row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-.urgent .num { color: var(--danger); font-size: 3.6rem; }
-
+.lines { display: grid; gap: 1rem; }
+.line-head { display: flex; align-items: baseline; flex-wrap: wrap; column-gap: 0.8rem; row-gap: 0.15rem; }
 .num {
-  font-family: var(--display);
-  font-weight: 700;
-  font-size: 2.3rem;
-  line-height: 1;
-  color: var(--accent);
-  text-decoration: none;
+  font: 700 2.4rem/1 var(--display);
+  color: var(--sea);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.01em;
 }
-.copy {
-  font: 600 0.85rem/1 var(--body);
-  color: var(--fg);
-  background: transparent;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 0.45rem 0.8rem;
-  min-height: 36px;
-  cursor: pointer;
-}
-.urgent .copy { border-color: var(--danger); }
-
-.lines { display: grid; }
-.line {
-  display: grid;
-  grid-template-columns: 8.5rem minmax(0, 1fr);
-  gap: 1rem;
-  padding-block: 1.25rem;
-  border-top: 1px solid var(--line);
-}
-.line:last-child { border-bottom: 1px solid var(--line); }
-.num-wrap { display: flex; flex-direction: column; align-items: flex-start; gap: 0.6rem; }
-.info { display: grid; gap: 0.4rem; min-width: 0; }
+.urgent .num { color: var(--danger); font-size: 3rem; }
 .chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
 .chips span {
-  background: var(--marigold-soft);
-  color: var(--marigold-ink);
-  font-size: 0.78rem;
+  background: var(--sun-soft);
+  color: var(--sun-ink);
+  font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  padding: 0.15rem 0.55rem;
+  padding: 0.15rem 0.6rem;
   border-radius: 999px;
 }
-.small { font-size: 0.95rem; color: var(--muted); }
-.small b { color: var(--fg); font-variant-numeric: tabular-nums; font-weight: 600; }
-
-@media (max-width: 30rem) {
-  .line { grid-template-columns: minmax(0, 1fr); gap: 0.6rem; }
-  .num-wrap { flex-direction: row; align-items: center; gap: 1rem; }
+.say {
+  background: var(--sand);
+  border: 1px dashed var(--line-strong);
+  border-radius: 0.9rem;
+  padding: 0.6rem 0.85rem;
 }
-
+.say-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.small { font-size: 1rem; color: var(--muted); }
+.small b { color: var(--ink); font-variant-numeric: tabular-nums; font-weight: 600; }
 .centre {
-  background: var(--accent-soft);
-  border-radius: 0.85rem;
-  padding: 1.25rem;
+  background: var(--sun-soft);
+  border-radius: 1.25rem;
+  padding: 1.15rem;
   display: grid;
   gap: 0.5rem;
 }
-
-ol.steps { list-style: none; counter-reset: step; margin: 0; padding: 0; display: grid; gap: 0.9rem; }
+.calling { display: grid; gap: 0.9rem; padding-top: 0.5rem; }
+ol.steps { list-style: none; counter-reset: step; margin: 0; padding: 0; display: grid; gap: 0.85rem; }
 ol.steps li {
   counter-increment: step;
   display: grid;
-  grid-template-columns: 2rem minmax(0, 1fr);
+  grid-template-columns: 2.1rem minmax(0, 1fr);
   gap: 0.75rem;
   align-items: start;
 }
 ol.steps li::before {
   content: counter(step);
-  font-family: var(--display);
-  font-weight: 700;
-  width: 2rem; height: 2rem;
+  font: 700 1.05rem/1 var(--display);
+  width: 2.1rem;
+  height: 2.1rem;
   border-radius: 50%;
-  background: var(--accent);
-  color: var(--on-accent);
-  display: grid; place-items: center;
-  line-height: 1;
-}
-
-ul.plain { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.6rem; }
-ul.plain li::marker { color: var(--accent); }
-
-footer {
-  border-top: 1px solid var(--line);
-  padding-top: 1.5rem;
+  background: var(--sea);
+  color: var(--on-sea);
   display: grid;
-  gap: 0.75rem;
-  font-size: 0.92rem;
-  color: var(--muted);
+  place-items: center;
 }
-footer ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.2rem; }
+
+/* Waves between bands */
+.wave-edge { display: block; width: 100%; height: 2.5rem; margin-block: -1px; }
+.wave-edge.flip { transform: scaleY(-1); }
+.wave-calm { fill: var(--sea-soft); }
+.wave-foot { fill: var(--sand-deep); }
+.band { background: var(--sea-soft); }
+
+/* Calm corner */
+.tools { display: grid; gap: 1rem; }
+.tool {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 1.25rem;
+  padding: 1.15rem;
+  display: grid;
+  gap: 0.8rem;
+  min-width: 0;
+}
+.tool-note { color: var(--muted); }
+.tool-small { font-size: 1rem; color: var(--muted); }
+
+.breath {
+  position: relative;
+  height: 10.5rem;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: linear-gradient(var(--sky-top), var(--sky-bottom));
+  border: 1px solid var(--line);
+}
+.breath .mini-sun {
+  position: absolute;
+  top: 1rem;
+  right: 1.4rem;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: var(--sun);
+  box-shadow: 0 0 0 0.55rem var(--sun-soft);
+}
+.water { position: absolute; inset: 0; transform: translateY(68%); transition: transform 6s ease-in-out; }
+.water-top { display: block; width: 100%; height: 1.5rem; fill: var(--water); }
+.water-body { position: absolute; left: 0; right: 0; top: 1.45rem; bottom: 0; background: var(--water); }
+.breath[data-phase="in"] .water { transform: translateY(14%); transition-duration: 4s; }
+.breath[data-phase="out"] .water { transform: translateY(68%); transition-duration: 6s; }
+.breath-cue {
+  font: 600 1.4rem/1.3 var(--display);
+  color: var(--sea);
+  text-align: center;
+  min-height: 1.85rem;
+}
+
+.sand-box { position: relative; border-radius: 1rem; overflow: hidden; }
+.sand-box textarea {
+  display: block;
+  width: 100%;
+  min-height: 8.5rem;
+  resize: vertical;
+  border: 1px solid var(--line-strong);
+  border-radius: 1rem;
+  padding: 0.9rem 1rem;
+  font: inherit;
+  color: var(--ink);
+  background-color: var(--sand-deep);
+  background-image: radial-gradient(var(--grain) 1px, transparent 1.3px);
+  background-size: 7px 7px;
+}
+.sand-box textarea::placeholder { color: var(--muted); opacity: 1; }
+.sand-wash {
+  position: absolute;
+  inset: 0;
+  transform: translateX(-105%);
+  background: linear-gradient(90deg, transparent, var(--foam) 25%, var(--water) 55%, transparent);
+  pointer-events: none;
+}
+.sand-box.washing .sand-wash { animation: wash 1.7s ease-in-out forwards; }
+.sand-box.washing textarea { animation: fade-words 1.7s ease-in-out forwards; }
+@keyframes wash { from { transform: translateX(-105%); } to { transform: translateX(105%); } }
+@keyframes fade-words { 0%, 35% { color: var(--ink); } 55%, 100% { color: transparent; } }
+
+.volume { display: grid; gap: 0.2rem; }
+.volume label { font-weight: 600; }
+.volume input { width: 100%; height: 2.75rem; accent-color: var(--sea); }
+
+.kind-word {
+  font: 600 1.45rem/1.35 var(--display);
+  background: var(--sun-soft);
+  color: var(--ink);
+  border-radius: 1rem;
+  padding: 1.1rem 1.2rem;
+  min-height: 6.5rem;
+  display: flex;
+  align-items: center;
+}
+
+ol.ground { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+ol.ground li {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.9rem;
+  background: var(--sand);
+  border: 1px solid var(--line);
+  transition: background-color 0.6s ease, border-color 0.6s ease;
+}
+ol.ground li.is-current { background: var(--sun-soft); border-color: var(--sun); }
+.g-num {
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font: 700 1.45rem/1 var(--display);
+  background: var(--sea-soft);
+  color: var(--sea);
+}
+
+/* Rights and family */
+ul.plain { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.6rem; }
+ul.plain li::marker { color: var(--sea); }
+.squiggle { display: block; width: 7.5rem; height: 0.85rem; margin: 0 auto; }
+.squiggle path { fill: none; stroke: var(--sun); stroke-width: 2.5; stroke-linecap: round; }
+
+/* Footer */
+.foot { background: var(--sand-deep); }
+.foot .wrap { display: grid; gap: 0.75rem; padding-block: 1.5rem 3rem; font-size: 1rem; color: var(--muted); }
+.foot strong { color: var(--ink); }
+.foot ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.25rem; }
 
 /* Shown for a moment after Quick exit, while the browser moves to the neutral page */
-#cover { max-width: 40rem; margin: 0 auto; padding-inline: 16px; padding-block: 2rem; display: grid; gap: 1rem; }
+#cover { max-width: 42rem; margin: 0 auto; padding: 2rem 16px; display: grid; gap: 1rem; }
 #cover .site { font-weight: 600; color: var(--muted); }
 #cover ol, #cover ul { margin: 0; padding-left: 1.3rem; display: grid; gap: 0.35rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .drift { animation: none !important; }
+  .water, ol.ground li { transition: none !important; }
+  .sand-box.washing .sand-wash, .sand-box.washing textarea { animation: none !important; }
+}
 </style>
 </head>
 <body>
@@ -230,118 +462,214 @@ footer ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.2rem; }
 <div id="real">
   <header class="bar">
     <div class="bar-inner">
-      <span class="brand">Kinara</span>
-      <button class="exit" id="exit" type="button">Quick exit</button>
+      <span class="brand">
+        <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false"><circle class="mark-sun" cx="16" cy="15" r="7"/><path class="mark-sea" d="M2 21 C7 17.5 11 17.5 16 21 S25 24.5 30 21 V30 H2 Z"/></svg>
+        Kinara
+      </span>
+      <a class="exit" id="exit" href="https://www.google.com/search?q=weather" rel="noreferrer">Quick exit</a>
     </div>
   </header>
 
+  <svg class="horizon" viewBox="0 0 1440 240" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="sky-fill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" class="sky-top"/>
+        <stop offset="1" class="sky-bottom"/>
+      </linearGradient>
+      <radialGradient id="sun-glow">
+        <stop offset="0" class="glow" stop-opacity="0.85"/>
+        <stop offset="1" class="glow" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <rect width="1440" height="240" fill="url(#sky-fill)"/>
+    <circle cx="860" cy="150" r="150" fill="url(#sun-glow)"/>
+    <circle class="sun" cx="860" cy="150" r="62"/>
+    <g class="drift"><path class="wave-back" d="M0 158 C120 146 240 146 360 158 C480 170 600 170 720 158 C840 146 960 146 1080 158 C1200 170 1320 170 1440 158 C1560 146 1680 146 1800 158 C1920 170 2040 170 2160 158 C2280 146 2400 146 2520 158 C2640 170 2760 170 2880 158 V240 H0 Z"/></g>
+    <g class="drift rev"><path class="wave-mid" d="M0 184 C120 174 240 174 360 184 C480 194 600 194 720 184 C840 174 960 174 1080 184 C1200 194 1320 194 1440 184 C1560 174 1680 174 1800 184 C1920 194 2040 194 2160 184 C2280 174 2400 174 2520 184 C2640 194 2760 194 2880 184 V240 H0 Z"/></g>
+    <path class="shore" d="M0 216 C240 202 480 202 720 216 S1200 230 1440 216 V262 H0 Z"/>
+  </svg>
+
   <main>
-    <section aria-labelledby="hero">
-      <h1 id="hero">What happened to you is not your fault.</h1>
+    <section class="hero wrap" aria-labelledby="welcome">
+      <h1 id="welcome"><span class="first">Take a breath.</span> You’re not alone, and none of this is your fault.</h1>
       <div class="also-said">
         <p lang="hi">यह आपकी गलती नहीं है।</p>
         <p lang="kn">ಇದು ನಿಮ್ಮ ತಪ್ಪಲ್ಲ.</p>
       </div>
-      <p class="lead">If someone at home hurts you, insults you, controls your money, or blames you for things that were never yours to carry, you deserve help. Every number on this page is run by the Government of India, and you do not need proof or anyone's permission to call.</p>
-      <p class="tip"><strong>Someone checks your phone?</strong> Tap Quick exit at the top, or press Esc, and you will be taken to a weather page. Opening this site in an incognito tab keeps it out of your history.</p>
-    </section>
-
-    <section class="urgent" aria-labelledby="danger">
-      <span class="label" id="danger">In danger right now</span>
-      <div class="row">
-        <a class="num" href="tel:112">112</a>
-        <button class="copy" type="button" data-copy="112">Copy</button>
+      <p class="lead">If someone at home hurts you, insults you, controls your money, or blames you for things that were never yours to carry, you deserve help. You do not need proof or anyone’s permission to ask for it.</p>
+      <div class="jump">
+        <a class="btn btn-sea" href="#talk">Talk to someone now</a>
+        <a class="btn btn-outline" href="#calm">Calm corner</a>
       </div>
-      <p>Police, ambulance and fire. Free, 24 hours a day, anywhere in India.</p>
+      <p class="tip"><strong>Someone checks your phone?</strong> Tap Quick exit at the top, or press Esc, and you’ll go straight to a weather page. Opening this site in an incognito tab keeps it out of your history. On a shared phone, clear the history afterwards.</p>
     </section>
 
-    <section aria-labelledby="lines">
-      <h2 id="lines">Free help you can call</h2>
+    <section id="talk" class="wrap section" aria-labelledby="talk-h">
+      <h2 id="talk-h">Talk to someone now</h2>
+      <p>Every number here is run by the Government of India. Tap to call, or copy the number to call from another phone.</p>
+
+      <article class="urgent" aria-labelledby="n112">
+        <p class="label">In danger right now</p>
+        <div class="line-head"><span class="num">112</span><h3 id="n112">Emergency</h3></div>
+        <p>Police, ambulance and fire. Free, 24 hours a day, anywhere in India.</p>
+        <p class="say"><span class="say-label">You can say</span>“I need help now. I am at…” and tell them where you are.</p>
+        <div class="actions">
+          <a class="btn btn-danger" href="tel:112">Call 112</a>
+          <button class="btn btn-outline needs-js" type="button" data-copy="112">Copy number</button>
+        </div>
+      </article>
+
       <div class="lines">
-        <article class="line">
-          <div class="num-wrap">
-            <a class="num" href="tel:181">181</a>
-            <button class="copy" type="button" data-copy="181">Copy</button>
-          </div>
-          <div class="info">
-            <h3>Women Helpline</h3>
-            <p class="chips"><span>24×7</span><span>Toll-free</span></p>
-            <p>For any violence or abuse, at home or outside. They counsel you and can connect you to the police, a One Stop Centre, a hospital or free legal help. They also explain government schemes for women.</p>
-            <p class="small">Anyone can call on a woman's behalf.</p>
+        <article class="line" aria-labelledby="n181">
+          <div class="line-head"><span class="num">181</span><h3 id="n181">Women Helpline</h3></div>
+          <p class="chips"><span>24×7</span><span>Toll-free</span></p>
+          <p>For any violence or abuse, at home or outside. They counsel you and can connect you to the police, a One Stop Centre, a hospital or free legal help. Anyone can call on a woman’s behalf.</p>
+          <p class="say"><span class="say-label">You can say</span>“Hello, I need help. I am having problems at home. What can you help me with?”</p>
+          <div class="actions">
+            <a class="btn btn-sea" href="tel:181">Call 181</a>
+            <button class="btn btn-outline needs-js" type="button" data-copy="181">Copy number</button>
           </div>
         </article>
 
-        <article class="line">
-          <div class="num-wrap">
-            <a class="num" href="tel:14490">14490</a>
-            <button class="copy" type="button" data-copy="14490">Copy</button>
-          </div>
-          <div class="info">
-            <h3>National Commission for Women</h3>
-            <p class="chips"><span>24×7</span><span>Toll-free</span><span>18 and over</span></p>
-            <p>Trained counsellors help you register a complaint about domestic violence, cyber harassment, stalking or sexual violence, and connect you with the police and other help.</p>
-            <p class="small">The same helpline also answers on <b>78271 70170</b>.</p>
-          </div>
-        </article>
-
-        <article class="line">
-          <div class="num-wrap">
-            <a class="num" href="tel:14416">14416</a>
-            <button class="copy" type="button" data-copy="14416">Copy</button>
-          </div>
-          <div class="info">
-            <h3>Tele-MANAS mental health line</h3>
-            <p class="chips"><span>24×7</span><span>Toll-free</span><span>Your language</span></p>
-            <p>If you feel low, anxious, cannot sleep, or feel you cannot go on, talk to a trained counsellor. Run by the Ministry of Health.</p>
-            <p class="small">Also on <b>1800 891 4416</b>.</p>
+        <article class="line" aria-labelledby="n14490">
+          <div class="line-head"><span class="num">14490</span><h3 id="n14490">National Commission for Women</h3></div>
+          <p class="chips"><span>24×7</span><span>Toll-free</span><span>18 and over</span></p>
+          <p>Trained counsellors help you register a complaint about domestic violence, cyber harassment, stalking or sexual violence, and connect you with the police and other help.</p>
+          <p class="say"><span class="say-label">You can say</span>“Hello, I am facing abuse at home. Can you tell me my options?”</p>
+          <p class="small">The same helpline also answers on <b>78271&nbsp;70170</b>.</p>
+          <div class="actions">
+            <a class="btn btn-sea" href="tel:14490">Call 14490</a>
+            <button class="btn btn-outline needs-js" type="button" data-copy="14490">Copy number</button>
           </div>
         </article>
 
-        <article class="line">
-          <div class="num-wrap">
-            <a class="num" href="tel:15100">15100</a>
-            <button class="copy" type="button" data-copy="15100">Copy</button>
-          </div>
-          <div class="info">
-            <h3>Free legal aid</h3>
-            <p class="chips"><span>Toll-free</span><span>Free lawyer</span></p>
-            <p>Every woman can get free legal advice and a lawyer at no cost, whatever her income. You can also walk into the legal aid office at your district court.</p>
+        <article class="line" aria-labelledby="n14416">
+          <div class="line-head"><span class="num">14416</span><h3 id="n14416">Tele-MANAS</h3></div>
+          <p class="chips"><span>24×7</span><span>Toll-free</span><span>Your language</span></p>
+          <p>If you feel low, anxious, cannot sleep, or feel you cannot go on, talk to a trained counsellor in your own language. Run by the Ministry of Health.</p>
+          <p class="say"><span class="say-label">You can say</span>“Hello, I am not feeling okay. I need someone to talk to.”</p>
+          <p class="small">Also on <b>1800&nbsp;891&nbsp;4416</b>.</p>
+          <div class="actions">
+            <a class="btn btn-sea" href="tel:14416">Call 14416</a>
+            <button class="btn btn-outline needs-js" type="button" data-copy="14416">Copy number</button>
           </div>
         </article>
 
-        <article class="line">
-          <div class="num-wrap">
-            <a class="num" href="tel:1098">1098</a>
-            <button class="copy" type="button" data-copy="1098">Copy</button>
+        <article class="line" aria-labelledby="n15100">
+          <div class="line-head"><span class="num">15100</span><h3 id="n15100">Free legal aid</h3></div>
+          <p class="chips"><span>Toll-free</span><span>Free lawyer</span></p>
+          <p>Every woman can get free legal advice and a lawyer at no cost, whatever her income. You can also visit the legal aid office at your district court.</p>
+          <p class="say"><span class="say-label">You can say</span>“Hello, I need free legal advice about problems at home.”</p>
+          <div class="actions">
+            <a class="btn btn-sea" href="tel:15100">Call 15100</a>
+            <button class="btn btn-outline needs-js" type="button" data-copy="15100">Copy number</button>
           </div>
-          <div class="info">
-            <h3>Child Helpline</h3>
-            <p class="chips"><span>24×7</span><span>Under 18</span></p>
-            <p>For any girl or boy under 18 facing violence, abuse or exploitation, including at home.</p>
+        </article>
+
+        <article class="line" aria-labelledby="n1098">
+          <div class="line-head"><span class="num">1098</span><h3 id="n1098">Child Helpline</h3></div>
+          <p class="chips"><span>24×7</span><span>Under 18</span></p>
+          <p>For any girl or boy under 18 facing violence, abuse or exploitation, including at home.</p>
+          <p class="say"><span class="say-label">You can say</span>“Hello, I am under 18 and I need help.”</p>
+          <div class="actions">
+            <a class="btn btn-sea" href="tel:1098">Call 1098</a>
+            <button class="btn btn-outline needs-js" type="button" data-copy="1098">Copy number</button>
           </div>
         </article>
       </div>
+
+      <div class="centre">
+        <h3>Sakhi One Stop Centres</h3>
+        <p>Most districts have one. In one place you can get medical care, help with the police, free legal aid, counselling, and a safe place to stay for up to 5 days. You can bring your daughters, and your sons up to age 12.</p>
+        <p><strong>Call 181 to find the one nearest you.</strong></p>
+      </div>
+
+      <div class="calling">
+        <h3>What happens when you call</h3>
+        <ol class="steps">
+          <li><span>Someone picks up. You can start with a simple question, like “What can you help me with?”</span></li>
+          <li><span>They ask what is happening and listen. You decide how much to share.</span></li>
+          <li><span>They explain your options: counselling, legal help, a safe place to stay, or the police.</span></li>
+          <li><span>Before you give your name or address, you can ask what they will do with it.</span></li>
+        </ol>
+        <p class="small">If calling from home is not safe, use a friend’s phone, or ask someone you trust to call 181 for you.</p>
+      </div>
     </section>
 
-    <section class="centre" aria-labelledby="osc">
-      <h2 id="osc">Sakhi One Stop Centres</h2>
-      <p>Most districts have one. In one place you can get medical care, help with the police, free legal aid, counselling, and a safe place to stay for up to 5 days. You can bring your daughters, and your sons up to age 12.</p>
-      <p><strong>Call 181 to find the one nearest you.</strong></p>
-    </section>
+    <svg class="wave-edge wave-calm" viewBox="0 0 1440 56" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 28 C240 0 480 0 720 28 S1200 56 1440 28 V56 H0 Z"/></svg>
+    <section id="calm" class="band" aria-labelledby="calm-h">
+      <div class="wrap section">
+        <h2 id="calm-h">Calm corner</h2>
+        <p>Gentle things to do when your heart feels heavy. Nothing you do here is saved.</p>
 
-    <section aria-labelledby="call">
-      <h2 id="call">What happens when you call</h2>
-      <ol class="steps">
-        <li><span>Someone picks up. You can start with a simple question, like "What can you help me with?"</span></li>
-        <li><span>They ask what is happening and listen. You decide how much to share.</span></li>
-        <li><span>They explain your options: counselling, legal help, a safe place to stay, or the police.</span></li>
-        <li><span>Before you give your name or address, you can ask what they will do with it.</span></li>
-      </ol>
-      <p class="small">If calling from home is not safe, use a friend's phone, or ask someone you trust to call 181 for you.</p>
-    </section>
+        <div class="tools">
+          <article class="tool" aria-labelledby="breathe-h">
+            <h3 id="breathe-h">Breathe with the waves</h3>
+            <p class="tool-note">Breathe in as the wave rises. Breathe out slowly as it falls.</p>
+            <div class="breath" id="breath" data-phase="rest" aria-hidden="true">
+              <span class="mini-sun"></span>
+              <div class="water">
+                <svg class="water-top" viewBox="0 0 1440 40" preserveAspectRatio="none" focusable="false"><g class="drift"><path d="M0 20 C120 8 240 8 360 20 C480 32 600 32 720 20 C840 8 960 8 1080 20 C1200 32 1320 32 1440 20 C1560 8 1680 8 1800 20 C1920 32 2040 32 2160 20 C2280 8 2400 8 2520 20 C2640 32 2760 32 2880 20 V40 H0 Z"/></g></svg>
+                <div class="water-body"></div>
+              </div>
+            </div>
+            <p class="breath-cue needs-js" id="breath-cue" aria-live="polite">Tap Start when you’re ready.</p>
+            <div class="actions needs-js"><button class="btn btn-sea" type="button" id="breath-toggle">Start</button></div>
+          </article>
 
-    <section aria-labelledby="law">
-      <h2 id="law">What the law says</h2>
+          <article class="tool" aria-labelledby="sand-h">
+            <h3 id="sand-h">Write it in the sand</h3>
+            <p class="tool-note">Write whatever is on your heart. When you’re ready, let a wave wash it away.</p>
+            <div class="sand-box" id="sand-box">
+              <label class="sr-only" for="sand-text">Write what is on your heart</label>
+              <textarea id="sand-text" rows="4" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Write anything here…"></textarea>
+              <div class="sand-wash" aria-hidden="true"></div>
+            </div>
+            <div class="actions needs-js"><button class="btn btn-sea" type="button" id="sand-wash">Let the wave take it</button></div>
+            <p class="tool-small" id="sand-status" role="status"></p>
+            <p class="tool-small">Nothing you write here is saved or sent anywhere. Some phone keyboards remember words you type.</p>
+          </article>
+
+          <article class="tool needs-js" aria-labelledby="sea-h">
+            <h3 id="sea-h">Sound of the sea</h3>
+            <p class="tool-note">Soft waves to listen to while you rest. Use earphones if others are nearby.</p>
+            <div class="actions">
+              <button class="btn btn-sea" type="button" id="sea-play">Play</button>
+              <button class="btn btn-outline" type="button" id="sea-stop" disabled>Stop</button>
+            </div>
+            <div class="volume">
+              <label for="sea-volume">Volume</label>
+              <input id="sea-volume" type="range" min="0" max="100" value="45">
+            </div>
+            <p class="tool-small" id="sea-status" role="status"></p>
+          </article>
+
+          <article class="tool" aria-labelledby="kind-h">
+            <h3 id="kind-h">Kind words</h3>
+            <p class="kind-word" id="kind-word" aria-live="polite">None of this is your fault.</p>
+            <div class="actions needs-js"><button class="btn btn-sea" type="button" id="kind-next">Another one</button></div>
+          </article>
+
+          <article class="tool" aria-labelledby="ground-h">
+            <h3 id="ground-h">5-4-3-2-1 grounding</h3>
+            <p class="tool-note">When your thoughts are racing, slowly notice the world around you. Take your time with each one.</p>
+            <ol class="ground" id="ground">
+              <li><span class="g-num">5</span><span>things you can <b>see</b></span></li>
+              <li><span class="g-num">4</span><span>things you can <b>touch</b></span></li>
+              <li><span class="g-num">3</span><span>things you can <b>hear</b></span></li>
+              <li><span class="g-num">2</span><span>things you can <b>smell</b></span></li>
+              <li><span class="g-num">1</span><span>thing you can <b>taste</b></span></li>
+            </ol>
+            <p class="tool-small" id="ground-done" role="status" hidden>Well done. Take one slow breath and notice how you feel now.</p>
+            <div class="actions" id="ground-actions" hidden><button class="btn btn-sea" type="button" id="ground-next">Start</button></div>
+          </article>
+        </div>
+      </div>
+    </section>
+    <svg class="wave-edge wave-calm flip" viewBox="0 0 1440 56" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 28 C240 0 480 0 720 28 S1200 56 1440 28 V56 H0 Z"/></svg>
+
+    <section class="wrap section" aria-labelledby="law">
+      <h2 id="law">Know your rights</h2>
       <p>The Protection of Women from Domestic Violence Act, 2005 protects women from abuse by the people they live with as family.</p>
       <ul class="plain">
         <li>It is not only hitting. Insults, threats, sexual abuse, and keeping money or basic needs from you also count as domestic violence.</li>
@@ -354,7 +682,9 @@ footer ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.2rem; }
       <p class="small">This is general information, not legal advice. A free legal aid lawyer on 15100 can explain what applies to you.</p>
     </section>
 
-    <section aria-labelledby="family">
+    <svg class="squiggle" viewBox="0 0 120 14" aria-hidden="true" focusable="false"><path d="M3 7 C13 1 23 1 33 7 S53 13 63 7 S83 1 93 7 S113 13 117 7"/></svg>
+
+    <section class="wrap section" aria-labelledby="family">
       <h2 id="family">If someone you love is going through this</h2>
       <ul class="plain">
         <li>Believe her. Never ask what she did to cause it.</li>
@@ -364,19 +694,24 @@ footer ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.2rem; }
         <li>Help her save these numbers somewhere only she can find them.</li>
       </ul>
     </section>
+  </main>
 
-    <footer>
-      <p>Numbers checked on 7 October 2026 against government sources. If a number does not connect, call 112. This site saves nothing you do here.</p>
+  <svg class="wave-edge wave-foot" viewBox="0 0 1440 56" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 28 C240 0 480 0 720 28 S1200 56 1440 28 V56 H0 Z"/></svg>
+  <footer class="foot">
+    <div class="wrap">
+      <p><strong>This site saves nothing you do here.</strong></p>
+      <p>Numbers checked on 7 October 2026 against government sources. If a number does not connect, call 112.</p>
       <ul>
         <li><a href="https://www.publicservicesmap.in/schemes/women-helpline--whl-181" target="_blank" rel="noopener noreferrer">Women Helpline 181</a></li>
         <li><a href="https://www.tribuneindia.com/news/india/ncw-launches-24x7-short-code-helpline-14490-for-women-in-distress" target="_blank" rel="noopener noreferrer">NCW helpline 14490</a></li>
         <li><a href="https://telemanas.mohfw.gov.in" target="_blank" rel="noopener noreferrer">Tele-MANAS</a></li>
         <li><a href="https://nalsa.gov.in/promoting-inclusive-legal-system/" target="_blank" rel="noopener noreferrer">NALSA free legal aid</a></li>
+        <li><a href="https://nicobartimes.com/?p=25834" target="_blank" rel="noopener noreferrer">Child Helpline 1098</a></li>
         <li><a href="https://en.vikaspedia.in/viewcontent/social-welfare/women-and-child-development/women-development-1/one-stop-centre-scheme" target="_blank" rel="noopener noreferrer">One Stop Centre scheme</a></li>
         <li><a href="https://cdn.ncw.gov.in/wp-content/uploads/2022/12/TheProtectionofWomenfromDomesticViolenceAct2005_0.pdf" target="_blank" rel="noopener noreferrer">Domestic Violence Act, 2005 (full text)</a></li>
       </ul>
-    </footer>
-  </main>
+    </div>
+  </footer>
 </div>
 
 <div id="cover" hidden>
@@ -398,47 +733,259 @@ footer ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.2rem; }
 
 <script>
 (function () {
-  // Where Quick exit sends her. location.replace() swaps this page out of the history, so Back does not return here.
-  var NEUTRAL_PAGE = 'https://www.google.com/search?q=weather';
+  'use strict';
+
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var real = document.getElementById('real');
   var cover = document.getElementById('cover');
+  var sandText = document.getElementById('sand-text');
 
-  function quickExit() {
+  /* ---------- Quick exit (safety rule 3) ----------
+     location.replace() swaps this page out of the history, so pressing Back does not return here. */
+  var NEUTRAL_PAGE = 'https://www.google.com/search?q=weather';
+  function quickExit(e) {
+    if (e) e.preventDefault();
+    sandText.value = '';
+    stopSea(true);
     real.hidden = true;
     cover.hidden = false;
     document.title = 'Masala Chai';
     window.scrollTo(0, 0);
-    try { window.location.replace(NEUTRAL_PAGE); } catch (e) { /* the recipe cover stays up */ }
+    try { window.location.replace(NEUTRAL_PAGE); } catch (err) { /* the recipe stays on screen */ }
   }
   document.getElementById('exit').addEventListener('click', quickExit);
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') quickExit();
+    if (e.key === 'Escape') quickExit(e);
   });
 
-  function selectNumber(btn) {
-    var n = btn.parentElement.querySelector('.num');
-    if (!n) return;
-    var r = document.createRange();
-    r.selectNodeContents(n);
-    var s = window.getSelection();
-    s.removeAllRanges();
-    s.addRange(r);
-    btn.textContent = 'Selected';
-    setTimeout(function () { btn.textContent = 'Copy'; }, 1800);
-  }
+  /* ---------- Nothing stays behind (safety rule 1) ---------- */
+  window.addEventListener('pagehide', function () { sandText.value = ''; stopSea(true); });
+  window.addEventListener('pageshow', function () { sandText.value = ''; });
 
+  /* ---------- Copy a number ---------- */
   document.querySelectorAll('[data-copy]').forEach(function (btn) {
+    var label = btn.textContent;
+    function show(msg) {
+      btn.textContent = msg;
+      setTimeout(function () { btn.textContent = label; }, 1800);
+    }
+    function selectNumber() {
+      var card = btn.closest('article');
+      var num = card && card.querySelector('.num');
+      if (num) {
+        var range = document.createRange();
+        range.selectNodeContents(num);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+      show('Number selected');
+    }
     btn.addEventListener('click', function () {
       var text = btn.getAttribute('data-copy');
       try {
-        navigator.clipboard.writeText(text).then(function () {
-          btn.textContent = 'Copied';
-          setTimeout(function () { btn.textContent = 'Copy'; }, 1800);
-        }).catch(function () { selectNumber(btn); });
-      } catch (e) {
-        selectNumber(btn);
+        navigator.clipboard.writeText(text).then(function () { show('Copied'); }, selectNumber);
+      } catch (err) {
+        selectNumber();
       }
     });
+  });
+
+  /* ---------- Breathe with the waves: in for 4 seconds, out for 6 ---------- */
+  var breath = document.getElementById('breath');
+  var cue = document.getElementById('breath-cue');
+  var breathBtn = document.getElementById('breath-toggle');
+  var breathTimer = null;
+  function setPhase(phase, words) {
+    breath.setAttribute('data-phase', phase);
+    cue.textContent = words;
+  }
+  function breatheIn() { setPhase('in', 'Breathe in…'); breathTimer = setTimeout(breatheOut, 4000); }
+  function breatheOut() { setPhase('out', 'Breathe out…'); breathTimer = setTimeout(breatheIn, 6000); }
+  breathBtn.addEventListener('click', function () {
+    if (breathTimer) {
+      clearTimeout(breathTimer);
+      breathTimer = null;
+      setPhase('rest', 'Tap Start when you’re ready.');
+      breathBtn.textContent = 'Start';
+    } else {
+      breathBtn.textContent = 'Stop';
+      breatheIn();
+    }
+  });
+
+  /* ---------- Write it in the sand ---------- */
+  var sandBox = document.getElementById('sand-box');
+  var sandStatus = document.getElementById('sand-status');
+  var sandStatusTimer = null;
+  function sandSay(words) {
+    sandStatus.textContent = words;
+    clearTimeout(sandStatusTimer);
+    sandStatusTimer = setTimeout(function () { sandStatus.textContent = ''; }, 6000);
+  }
+  document.getElementById('sand-wash').addEventListener('click', function () {
+    if (!sandText.value.trim()) { sandSay('Write something first, then let the wave take it.'); return; }
+    if (reduceMotion) { sandText.value = ''; sandSay('The wave took it. Nothing was saved.'); return; }
+    sandBox.classList.remove('washing');
+    void sandBox.offsetWidth;
+    sandBox.classList.add('washing');
+    setTimeout(function () { sandText.value = ''; }, 950);
+    setTimeout(function () {
+      sandBox.classList.remove('washing');
+      sandSay('The wave took it. Nothing was saved.');
+    }, 1750);
+  });
+
+  /* ---------- Sound of the sea: soft noise, shaped into slow waves (no audio files) ---------- */
+  var seaPlay = document.getElementById('sea-play');
+  var seaStop = document.getElementById('sea-stop');
+  var seaVolume = document.getElementById('sea-volume');
+  var seaStatus = document.getElementById('sea-status');
+  var AudioCtx = window.AudioContext || window.webkitAudioContext;
+  var sea = null;
+  var noise = null;
+
+  function seaLevel() { var v = Number(seaVolume.value) / 100; return v * v * 0.6; }
+  function makeNoise(ctx) {
+    // Brown noise with a short crossfade so the loop has no click.
+    var len = Math.floor(ctx.sampleRate * 8);
+    var fade = Math.floor(ctx.sampleRate * 0.5);
+    var buf = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (var ch = 0; ch < 2; ch++) {
+      var raw = new Float32Array(len + fade);
+      var last = 0;
+      for (var i = 0; i < raw.length; i++) {
+        last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02;
+        raw[i] = last * 3.5;
+      }
+      var out = buf.getChannelData(ch);
+      for (var j = 0; j < len; j++) {
+        if (j < fade) {
+          var t = j / fade;
+          out[j] = raw[len + j] * (1 - t) + raw[j] * t;
+        } else {
+          out[j] = raw[j];
+        }
+      }
+    }
+    return buf;
+  }
+  function playSea() {
+    if (sea) return;
+    if (!AudioCtx) { seaStatus.textContent = 'This browser can’t play the sound. The breathing waves may help instead.'; return; }
+    var ctx = new AudioCtx();
+    if (!noise || noise.sampleRate !== ctx.sampleRate) noise = makeNoise(ctx);
+    var src = ctx.createBufferSource();
+    src.buffer = noise;
+    src.loop = true;
+    var filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 600;
+    filter.Q.value = 0.5;
+    var swell = ctx.createGain();
+    swell.gain.value = 0.55;
+    var lfo = ctx.createOscillator();      // one slow wave about every 11 seconds
+    lfo.type = 'sine';
+    lfo.frequency.value = 0.09;
+    var lfoLoud = ctx.createGain();
+    lfoLoud.gain.value = 0.4;
+    var lfoBright = ctx.createGain();
+    lfoBright.gain.value = 300;
+    lfo.connect(lfoLoud);
+    lfoLoud.connect(swell.gain);
+    lfo.connect(lfoBright);
+    lfoBright.connect(filter.frequency);
+    var master = ctx.createGain();
+    master.gain.value = 0;
+    src.connect(filter);
+    filter.connect(swell);
+    swell.connect(master);
+    master.connect(ctx.destination);
+    src.start();
+    lfo.start();
+    if (ctx.resume) ctx.resume();
+    master.gain.setTargetAtTime(seaLevel(), ctx.currentTime, 0.6);
+    sea = { ctx: ctx, master: master };
+    seaPlay.disabled = true;
+    seaStop.disabled = false;
+    seaStatus.textContent = 'Playing.';
+  }
+  function stopSea(now) {
+    if (!sea) return;
+    var s = sea;
+    sea = null;
+    try {
+      if (now) {
+        s.ctx.close();
+      } else {
+        s.master.gain.setTargetAtTime(0, s.ctx.currentTime, 0.25);
+        setTimeout(function () { try { s.ctx.close(); } catch (err) {} }, 1200);
+      }
+    } catch (err) {}
+    seaPlay.disabled = false;
+    seaStop.disabled = true;
+    seaStatus.textContent = '';
+  }
+  seaPlay.addEventListener('click', playSea);
+  seaStop.addEventListener('click', function () { stopSea(false); });
+  seaVolume.addEventListener('input', function () {
+    if (sea) sea.master.gain.setTargetAtTime(seaLevel(), sea.ctx.currentTime, 0.1);
+  });
+
+  /* ---------- Kind words (Rahul approves every sentence) ---------- */
+  var KIND_WORDS = [
+    'None of this is your fault.',
+    'You deserve to feel safe, at home and everywhere.',
+    'Your feelings make sense. Anyone would feel this way.',
+    'You have made it through every hard day so far. That takes real strength.',
+    'Asking for help is a brave thing to do.',
+    'You are not too much. You never were.',
+    'Rest is allowed. You don’t have to fix everything today.',
+    'You matter, just as you are.',
+    'One slow breath at a time is enough.',
+    'Being blamed for something doesn’t make it your fault.',
+    'There are people whose job is to help you, and they are one call away.',
+    'You can be gentle with yourself today.'
+  ];
+  var kindWord = document.getElementById('kind-word');
+  var kindIndex = 0;
+  var kindDeck = [];
+  document.getElementById('kind-next').addEventListener('click', function () {
+    if (!kindDeck.length) {
+      for (var i = 0; i < KIND_WORDS.length; i++) if (i !== kindIndex) kindDeck.push(i);
+      for (var k = kindDeck.length - 1; k > 0; k--) {
+        var r = Math.floor(Math.random() * (k + 1));
+        var tmp = kindDeck[k]; kindDeck[k] = kindDeck[r]; kindDeck[r] = tmp;
+      }
+    }
+    kindIndex = kindDeck.pop();
+    kindWord.textContent = KIND_WORDS[kindIndex];
+  });
+
+  /* ---------- 5-4-3-2-1 grounding, one step at a time ---------- */
+  var groundSteps = document.querySelectorAll('#ground li');
+  var groundBtn = document.getElementById('ground-next');
+  var groundDone = document.getElementById('ground-done');
+  var groundStep = -1;
+  document.getElementById('ground-actions').hidden = false;
+  function markStep(i) {
+    groundSteps.forEach(function (li, j) {
+      li.classList.toggle('is-current', j === i);
+      if (j === i) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current');
+    });
+  }
+  groundBtn.addEventListener('click', function () {
+    if (groundStep >= groundSteps.length) groundStep = -1;
+    groundStep++;
+    if (groundStep < groundSteps.length) {
+      groundDone.hidden = true;
+      markStep(groundStep);
+      groundBtn.textContent = groundStep === groundSteps.length - 1 ? 'Finish' : 'Next';
+    } else {
+      markStep(-1);
+      groundDone.hidden = false;
+      groundBtn.textContent = 'Start again';
+    }
   });
 })();
 </script>
